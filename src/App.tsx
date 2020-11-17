@@ -1,25 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {
+  Box,
+  Button,
+  Container,
+  createStyles,
+  makeStyles,
+  TextField,
+} from "@material-ui/core";
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    container: {
+      marginTop: "10rem",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  })
+);
 
 function App() {
+  const classes = useStyles();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container maxWidth="xs" className={classes.container}>
+      <TextField variant="outlined" placeholder="Race name" fullWidth />
+      <Box height={8} />
+      <Button color="primary" variant="contained" fullWidth>
+        Create Race
+      </Button>
+    </Container>
   );
 }
 
