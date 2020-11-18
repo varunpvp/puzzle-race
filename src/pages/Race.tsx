@@ -1,3 +1,10 @@
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Typography,
+} from "@material-ui/core";
 import firebase from "firebase/app";
 import React, { useCallback, useEffect, useState } from "react";
 import { RouteComponentProps, useParams } from "react-router-dom";
@@ -24,26 +31,65 @@ const Race: React.FC<Props> = () => {
   }, [raceRef]);
 
   if (race === null) {
-    return <div>loading...</div>;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (race.state === "waiting") {
     if (race.hostId === userId) {
       return (
-        <div>
-          Waiting for you to start the race{" "}
-          <button
-            onClick={() => {
-              raceRef.child("state").set("starting");
-            }}
-          >
-            Start
-          </button>
-        </div>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+          flexDirection="column"
+        >
+          <Container maxWidth="sm">
+            <Typography variant="h5" align="center">
+              Waiting
+            </Typography>
+
+            <Typography variant="body1" align="center">
+              for you to start the race
+            </Typography>
+            <Box height={8} />
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                raceRef.child("state").set("starting");
+              }}
+            >
+              Start
+            </Button>
+          </Container>
+        </Box>
       );
     }
 
-    return <div>waiting for race to start</div>;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        flexDirection="column"
+      >
+        <Typography variant="h5" align="center">
+          Waiting for race to start
+        </Typography>
+      </Box>
+    );
   }
 
   if (race.state === "starting") {
@@ -120,7 +166,19 @@ const CountDown: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
     setTimeout(countDown, 1000);
   }, [countDown]);
 
-  return <div>starting...{count}</div>;
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100%"
+      flexDirection="column"
+    >
+      <Typography variant="h5" align="center">
+        Starting in {count}
+      </Typography>
+    </Box>
+  );
 };
 
 export default Race;
