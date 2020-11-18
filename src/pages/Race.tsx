@@ -141,7 +141,7 @@ const Race: React.FC<Props> = () => {
     );
   }
 
-  if (race.state === "finished") {
+  if (Object.values(race.racers).every((racer) => racer.finishedAt)) {
     return (
       <Box
         display="flex"
