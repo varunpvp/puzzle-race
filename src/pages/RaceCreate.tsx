@@ -27,7 +27,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const RaceStart = () => {
+const RaceCreate = () => {
   const classes = useStyles();
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const { control } = useForm({
@@ -99,4 +99,4 @@ const RaceStart = () => {
   );
 };
 
-export default RaceStart;
+export default RaceCreate;

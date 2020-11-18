@@ -70,8 +70,6 @@ const PuzzleBoard: React.FC<Props> = ({
     }
   };
 
-  console.log({ solution });
-
   return (
     <ReactResizeDetector handleHeight handleWidth>
       {({ width, height }: { width: number; height: number }) => {
@@ -93,6 +91,7 @@ const PuzzleBoard: React.FC<Props> = ({
                 onDrop={({ sourceSquare, targetSquare }) =>
                   handleMove({ from: sourceSquare, to: targetSquare })
                 }
+                transitionDuration={100}
               />
             </div>
           </div>

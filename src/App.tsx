@@ -1,13 +1,13 @@
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Race from "./pages/Race";
-import RaceStart from "./pages/RaceStart";
+import RaceCreate from "./pages/RaceCreate";
 
 function App() {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/" exact component={RaceStart} />
+        <Route path="/" exact component={RaceCreate} />
         <Route path="/:raceId" exact component={Race} />
       </Switch>
     </BrowserRouter>
