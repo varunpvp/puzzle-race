@@ -8,6 +8,7 @@ import RaceType from "../types/Race";
 interface Props extends RouteComponentProps<{ raceId: string }> {}
 
 const Race: React.FC<Props> = () => {
+  const userId = Auth.currentUser?.uid!;
   const [race, setRace] = useState<null | RaceType>(null);
   const params = useParams<{ raceId: string }>();
   const [raceRef] = useState(Database.ref("race").child(params.raceId));
@@ -27,18 +28,22 @@ const Race: React.FC<Props> = () => {
   }
 
   if (race.state === "waiting") {
-    return (
-      <div>
-        waiting for race to start{" "}
-        <button
-          onClick={() => {
-            raceRef.child("state").set("starting");
-          }}
-        >
-          Start
-        </button>
-      </div>
-    );
+    if (race.hostId === userId) {
+      return (
+        <div>
+          Waiting for you to start the race{" "}
+          <button
+            onClick={() => {
+              raceRef.child("state").set("starting");
+            }}
+          >
+            Start
+          </button>
+        </div>
+      );
+    }
+
+    return <div>waiting for race to start</div>;
   }
 
   if (race.state === "starting") {
@@ -55,7 +60,6 @@ const Race: React.FC<Props> = () => {
     return <div>finished</div>;
   }
 
-  const userId = Auth.currentUser?.uid!;
   const racer = race.racers[userId];
   const puzzle = race.puzzleList[racer.currentPuzzleIndex];
 
