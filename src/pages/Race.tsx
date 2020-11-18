@@ -103,14 +103,72 @@ const Race: React.FC<Props> = () => {
   }
 
   if (race.state === "finished") {
-    return <div>finished</div>;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        flexDirection="column"
+      >
+        <Container maxWidth="sm">
+          <Typography variant="h5" align="center">
+            Finished
+          </Typography>
+
+          <Typography variant="body1" align="center">
+            The has ended
+          </Typography>
+          <Box height={8} />
+          <Button
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={() => {
+              raceRef.child("state").set("starting");
+            }}
+          >
+            Start
+          </Button>
+        </Container>
+      </Box>
+    );
   }
 
   const racer = race.racers[userId];
   const puzzle = race.puzzleList[racer.currentPuzzleIndex];
 
   if (racer.finishedAt) {
-    return <div>You finished the race</div>;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        flexDirection="column"
+      >
+        <Container maxWidth="sm">
+          <Typography variant="h5" align="center">
+            Finished
+          </Typography>
+
+          <Typography variant="body1" align="center">
+            You finished the race, wait other to finish.
+          </Typography>
+          <Box height={8} />
+          <Button
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={() => {
+              raceRef.child("state").set("starting");
+            }}
+          >
+            Start
+          </Button>
+        </Container>
+      </Box>
+    );
   }
 
   return (
