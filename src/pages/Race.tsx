@@ -155,24 +155,13 @@ const Race: React.FC<Props> = () => {
           <Typography variant="body1" align="center">
             You finished the race, wait other to finish.
           </Typography>
-          <Box height={8} />
-          <Button
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={() => {
-              raceRef.child("state").set("starting");
-            }}
-          >
-            Start
-          </Button>
         </Container>
       </Box>
     );
   }
 
   return (
-    <div>
+    <div style={{ width: "100%", height: "100%" }}>
       <PuzzleBoard
         fen={puzzle.startFen}
         solution={puzzle.solution}

@@ -75,25 +75,18 @@ const PuzzleBoard: React.FC<Props> = ({
       {({ width, height }: { width: number; height: number }) => {
         const size = Math.min(width, height) || 400;
         return (
-          <div className="w-full flex">
-            <div
-              className="m-auto"
-              style={{
-                width: size,
-                height: size,
-              }}
-            >
-              <Chessboard
-                orientation={orientation}
-                position={fen}
-                width={size}
-                draggable={movable && solution.length > 0}
-                onDrop={({ sourceSquare, targetSquare }) =>
-                  handleMove({ from: sourceSquare, to: targetSquare })
-                }
-                transitionDuration={100}
-              />
-            </div>
+          <div style={{ width: "100%", height: "100%" }}>
+            <Chessboard
+              boardStyle={{ background: "black" }}
+              orientation={orientation}
+              position={fen}
+              width={size}
+              draggable={movable && solution.length > 0}
+              onDrop={({ sourceSquare, targetSquare }) =>
+                handleMove({ from: sourceSquare, to: targetSquare })
+              }
+              transitionDuration={100}
+            />
           </div>
         );
       }}
