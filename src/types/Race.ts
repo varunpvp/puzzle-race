@@ -6,8 +6,7 @@ export default interface Race {
   name: string;
   puzzleList: Puzzle[];
   state: "waiting" | "starting" | "started" | "finished" | "aborted";
-  puzzleCount: string;
-  startedAt: number;
+  startedAt: any;
   time: number;
   racers: {
     [id: string]: Omit<Racer, "id">;

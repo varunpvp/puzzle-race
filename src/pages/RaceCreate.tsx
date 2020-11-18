@@ -11,9 +11,15 @@ import {
   makeStyles,
   createStyles,
 } from "@material-ui/core";
+import firebase from "firebase/app";
 import React from "react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
+import shortid from "shortid";
+import { Auth, Database } from "../config/Firebase";
+import { puzzleList } from "../constants";
+import Race from "../types/Race";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -27,15 +33,44 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const RaceCreate = () => {
+const RaceCreate: React.FC = () => {
+  const history = useHistory();
   const classes = useStyles();
+  const [loading, setLoading] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
-  const { control } = useForm({
+  const { control, getValues } = useForm({
     defaultValues: { name: "", time: 120, puzzleCount: 5 },
   });
 
-  const handleStartRace = () => {
-    setDetailsDialogOpen(false);
+  const handleCreateRace = async () => {
+    try {
+      setLoading(true);
+      const values = getValues();
+
+      const raceId = shortid();
+      const hostId = Auth.currentUser?.uid!;
+
+      const race: Race = {
+        hostId,
+        name: values.name,
+        puzzleList: puzzleList,
+        state: "waiting",
+        startedAt: firebase.database.ServerValue.TIMESTAMP,
+        time: values.time,
+        racers: {
+          [hostId]: {
+            name: "Racer 1",
+            currentPuzzleIndex: 0,
+          },
+        },
+      };
+
+      await Database.ref("race").child(raceId).set(race);
+      history.push(`/${raceId}`);
+    } finally {
+      setLoading(false);
+      setDetailsDialogOpen(false);
+    }
   };
 
   return (
@@ -90,7 +125,7 @@ const RaceCreate = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleStartRace} color="primary">
+          <Button onClick={handleCreateRace} color="primary" disabled={loading}>
             Start
           </Button>
         </DialogActions>

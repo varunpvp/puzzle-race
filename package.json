@@ -51,6 +51,7 @@
   "devDependencies": {
     "@types/chess.js": "^0.10.1",
     "@types/react-resize-detector": "^5.0.0",
-    "@types/react-router-dom": "^5.1.6"
+    "@types/react-router-dom": "^5.1.6",
+    "@types/shortid": "^0.0.29"
   }
 }
