@@ -3,6 +3,7 @@ import {
   Button,
   CircularProgress,
   Container,
+  TextField,
   Typography,
 } from "@material-ui/core";
 import firebase from "firebase/app";
@@ -39,6 +40,44 @@ const Race: React.FC<Props> = () => {
         height="100%"
       >
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!Object.keys(race.racers).includes(userId)) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        flexDirection="column"
+      >
+        <Container maxWidth="xs">
+          <Typography variant="h5" align="center">
+            Join the race
+          </Typography>
+
+          <Typography variant="body1" align="center">
+            Please enter your name to join race
+          </Typography>
+          <Box height={8} />
+          <TextField variant="outlined" placeholder="Your name" fullWidth />
+          <Box height={8} />
+          <Button
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={() => {
+              raceRef
+                .child("racers")
+                .child(userId)
+                .set({ name: "get the name", currentPuzzleIndex: 0 });
+            }}
+          >
+            Join
+          </Button>
+        </Container>
       </Box>
     );
   }
