@@ -17,3 +17,16 @@ const Firebase = firebase.initializeApp(config);
 
 export const Auth = Firebase.auth();
 export const Database = Firebase.database();
+
+export const getFirebaseServerTimestamp = async () => {
+  try {
+    const offsetSnap = await Firebase.database()
+      .ref("/.info/serverTimeOffset")
+      .once("value");
+
+    return offsetSnap.val() + Date.now();
+  } catch {
+    console.error("Error while getting firebase server time offset");
+    return NaN;
+  }
+};
