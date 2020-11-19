@@ -69,39 +69,14 @@ const Race: React.FC<Props> = () => {
 
   if (!Object.keys(race.racers).includes(userId)) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-        flexDirection="column"
-      >
-        <Container maxWidth="xs">
-          <Typography variant="h5" align="center">
-            Join the race
-          </Typography>
-
-          <Typography variant="body1" align="center">
-            Please enter your name to join race
-          </Typography>
-          <Box height={8} />
-          <TextField variant="outlined" placeholder="Your name" fullWidth />
-          <Box height={8} />
-          <Button
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={() => {
-              raceRef
-                .child("racers")
-                .child(userId)
-                .set({ name: "get the name", currentPuzzleIndex: 0 });
-            }}
-          >
-            Join
-          </Button>
-        </Container>
-      </Box>
+      <JoinRace
+        onJoin={async (name) => {
+          await raceRef
+            .child("racers")
+            .child(userId)
+            .set({ name, currentPuzzleIndex: 0 });
+        }}
+      />
     );
   }
 
@@ -280,6 +255,58 @@ const CountDown: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
       <Typography variant="h5" align="center">
         Starting in {count}
       </Typography>
+    </Box>
+  );
+};
+
+const JoinRace: React.FC<{ onJoin: (name: string) => Promise<void> }> = ({
+  onJoin,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100%"
+      flexDirection="column"
+    >
+      <Container maxWidth="xs">
+        <Typography variant="h5" align="center">
+          Join the race
+        </Typography>
+
+        <Typography variant="body1" align="center">
+          Please enter your name to join race
+        </Typography>
+        <Box height={8} />
+        <TextField
+          variant="outlined"
+          placeholder="Your name"
+          fullWidth
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <Box height={8} />
+        <Button
+          color="primary"
+          variant="contained"
+          fullWidth
+          disabled={loading}
+          onClick={async () => {
+            try {
+              setLoading(true);
+              await onJoin(name);
+            } finally {
+              setLoading(false);
+            }
+          }}
+        >
+          Join
+        </Button>
+      </Container>
     </Box>
   );
 };
