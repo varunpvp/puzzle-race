@@ -3,6 +3,7 @@ import {
   Button,
   CircularProgress,
   Container,
+  Grid,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -61,17 +62,6 @@ const Race: React.FC<Props> = () => {
           <Typography variant="body1" align="center">
             The has ended
           </Typography>
-          <Box height={8} />
-          <Button
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={() => {
-              raceRef.child("state").set("starting");
-            }}
-          >
-            Start
-          </Button>
         </Container>
       </Box>
     );
@@ -200,36 +190,63 @@ const Race: React.FC<Props> = () => {
   }
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
-      <PuzzleBoard
-        fen={puzzle.startFen}
-        solution={puzzle.solution}
-        movable={true}
-        onIncorrectMove={() => console.log("Incorrect move")}
-        onSolve={() => {
-          // TODO: notify solved
+    <Box
+      display="flex"
+      flexDirection="column"
+      width="100%"
+      height="100%"
+      maxWidth={768}
+      margin="auto"
+    >
+      <Box height={60}>Puzzle Race</Box>
+      <Box flex={1}>
+        <PuzzleBoard
+          fen={puzzle.startFen}
+          solution={puzzle.solution}
+          movable={true}
+          onIncorrectMove={() => console.log("Incorrect move")}
+          onSolve={() => {
+            // TODO: notify solved
 
-          if (race.puzzleList.length - 1 === racer.currentPuzzleIndex) {
-            setTimeout(() => {
-              raceRef
-                .child("racers")
-                .child(userId)
-                .child("finishedAt")
-                .set(firebase.database.ServerValue.TIMESTAMP);
-            }, 1000);
-          } else {
-            setTimeout(() => {
-              raceRef
-                .child("racers")
-                .child(userId)
-                .child("currentPuzzleIndex")
-                .set(firebase.database.ServerValue.increment(1));
-            }, 500);
-          }
-        }}
-        onCorrectMove={() => console.log("Correct Move")}
-      />
-    </div>
+            if (race.puzzleList.length - 1 === racer.currentPuzzleIndex) {
+              setTimeout(() => {
+                raceRef
+                  .child("racers")
+                  .child(userId)
+                  .child("finishedAt")
+                  .set(firebase.database.ServerValue.TIMESTAMP);
+              }, 1000);
+            } else {
+              setTimeout(() => {
+                raceRef
+                  .child("racers")
+                  .child(userId)
+                  .child("currentPuzzleIndex")
+                  .set(firebase.database.ServerValue.increment(1));
+              }, 500);
+            }
+          }}
+          onCorrectMove={() => console.log("Correct Move")}
+        />
+      </Box>
+
+      <Box padding={2}>
+        <Grid container justify="space-between">
+          <Grid>
+            <Typography variant="h5">Puzzles</Typography>
+          </Grid>
+          <Grid>
+            <Typography variant="h5">Time left</Typography>
+          </Grid>
+        </Grid>
+        <Grid container justify="space-between">
+          <Grid>
+            {racer.currentPuzzleIndex}/{race.puzzleList.length}
+          </Grid>
+          <Grid>1:11</Grid>
+        </Grid>
+      </Box>
+    </Box>
   );
 };
 

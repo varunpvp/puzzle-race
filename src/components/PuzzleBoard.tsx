@@ -75,7 +75,7 @@ const PuzzleBoard: React.FC<Props> = ({
         return (
           <div style={{ width: "100%", height: "100%" }}>
             <Chessboard
-              boardStyle={{ background: "black" }}
+              boardStyle={{ margin: "auto" }}
               orientation={orientation}
               position={chess.fen()}
               width={size}
