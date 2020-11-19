@@ -18,7 +18,7 @@ const Firebase = firebase.initializeApp(config);
 export const Auth = Firebase.auth();
 export const Database = Firebase.database();
 
-export const getFirebaseServerTimestamp = async () => {
+export const getFirebaseServerTimestamp = async (): Promise<number> => {
   try {
     const offsetSnap = await Firebase.database()
       .ref("/.info/serverTimeOffset")

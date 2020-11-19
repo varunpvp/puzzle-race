@@ -1888,6 +1888,11 @@
   dependencies:
     "@babel/runtime" "^7.10.2"
 
+"@types/accurate-interval@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/accurate-interval/-/accurate-interval-1.0.0.tgz#ff931a5e4ac892b25f6091174ea48817290b9f12"
+  integrity sha512-4CArlLyOmJ42YMzX1Ny5kBWFdxuMSA+7K0zwYC5qSv7lFSPIh8toNIPbcrVqQVApMcIaP7AAWY0a+TpBO3GBxA==
+
 "@types/anymatch@*":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@types/anymatch/-/anymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
@@ -2467,6 +2472,11 @@ accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
   dependencies:
     mime-types "~2.1.24"
     negotiator "0.6.2"
+
+accurate-interval@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/accurate-interval/-/accurate-interval-1.0.9.tgz#5752282f88e8050e5e0947e0d024d37f50300c3c"
+  integrity sha1-V1IoL4joBQ5eCUfg0CTTf1AwDDw=
 
 acorn-globals@^6.0.0:
   version "6.0.0"

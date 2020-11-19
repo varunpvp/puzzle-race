@@ -55,7 +55,8 @@ const RaceCreate: React.FC = () => {
         name: values.name,
         puzzleList: puzzleList,
         state: "waiting",
-        startedAt: firebase.database.ServerValue.TIMESTAMP,
+        startedAt: null,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
         time: values.time,
         racers: {
           [hostId]: {

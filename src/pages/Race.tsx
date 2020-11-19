@@ -11,26 +11,51 @@ import firebase from "firebase/app";
 import React, { useCallback, useEffect, useState } from "react";
 import { RouteComponentProps, useParams } from "react-router-dom";
 import PuzzleBoard from "../components/PuzzleBoard";
-import { Auth, Database } from "../config/Firebase";
+import { Auth, Database, getFirebaseServerTimestamp } from "../config/Firebase";
 import RaceType from "../types/Race";
 
 interface Props extends RouteComponentProps<{ raceId: string }> {}
 
 const Race: React.FC<Props> = () => {
   const userId = Auth.currentUser?.uid!;
-  const [race, setRace] = useState<null | RaceType>(null);
   const params = useParams<{ raceId: string }>();
+  const [race, setRace] = useState<null | RaceType>(null);
+  const [time, setTime] = useState("0:00");
   const [raceRef] = useState(Database.ref("race").child(params.raceId));
+
+  const tickTimer = useCallback(async () => {
+    if (!race) {
+      return;
+    }
+
+    const serverTime = await getFirebaseServerTimestamp();
+
+    const timePassed = serverTime - race.startedAt;
+    const timeLeft = race.time * 1000 - timePassed;
+
+    const minutes = parseInt(`${timeLeft / 60000}`);
+    const seconds = parseInt(`${(timeLeft % 60000) / 1000}`);
+
+    if (timeLeft > 0) {
+      setTime(`${minutes}:${seconds}`);
+      setTimeout(tickTimer, 1000);
+    }
+  }, [race]);
+
+  const setupTimer = useCallback(() => {
+    setTimeout(tickTimer, 1000);
+  }, [tickTimer]);
 
   useEffect(() => {
     raceRef.on("value", (snapshot) => {
       setRace(snapshot.val());
+      setupTimer();
     });
 
     return () => {
       raceRef.off();
     };
-  }, [raceRef]);
+  }, [raceRef, setupTimer]);
 
   if (race === null) {
     return (
@@ -133,95 +158,35 @@ const Race: React.FC<Props> = () => {
     return (
       <CountDown
         onFinish={() => {
-          raceRef.child("state").set("started");
+          raceRef.update({
+            state: "started",
+            startedAt: firebase.database.ServerValue.TIMESTAMP,
+          });
         }}
       />
     );
   }
 
-  const racer = race.racers[userId];
-  const puzzle = race.puzzleList[racer.currentPuzzleIndex];
-
-  if (racer.finishedAt) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-        flexDirection="column"
-      >
-        <Container maxWidth="sm">
-          <Typography variant="h5" align="center">
-            Finished
-          </Typography>
-
-          <Typography variant="body1" align="center">
-            You finished the race, wait other to finish.
-          </Typography>
-        </Container>
-      </Box>
-    );
-  }
-
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      width="100%"
-      height="100%"
-      maxWidth={768}
-      margin="auto"
-    >
-      <Box height={60}>Puzzle Race</Box>
-      <Box flex={1}>
-        <PuzzleBoard
-          fen={puzzle.startFen}
-          solution={puzzle.solution}
-          movable={true}
-          onIncorrectMove={() => console.log("Incorrect move")}
-          onSolve={() => {
-            // TODO: notify solved
-
-            if (race.puzzleList.length - 1 === racer.currentPuzzleIndex) {
-              setTimeout(() => {
-                raceRef
-                  .child("racers")
-                  .child(userId)
-                  .child("finishedAt")
-                  .set(firebase.database.ServerValue.TIMESTAMP);
-              }, 1000);
-            } else {
-              setTimeout(() => {
-                raceRef
-                  .child("racers")
-                  .child(userId)
-                  .child("currentPuzzleIndex")
-                  .set(firebase.database.ServerValue.increment(1));
-              }, 500);
-            }
-          }}
-          onCorrectMove={() => console.log("Correct Move")}
-        />
-      </Box>
-
-      <Box padding={2}>
-        <Grid container justify="space-between">
-          <Grid>
-            <Typography variant="h5">Puzzles</Typography>
-          </Grid>
-          <Grid>
-            <Typography variant="h5">Time left</Typography>
-          </Grid>
-        </Grid>
-        <Grid container justify="space-between">
-          <Grid>
-            {racer.currentPuzzleIndex}/{race.puzzleList.length}
-          </Grid>
-          <Grid>1:11</Grid>
-        </Grid>
-      </Box>
-    </Box>
+    <PlayRace
+      race={race}
+      time={time}
+      userId={userId}
+      onFinish={() => {
+        raceRef
+          .child("racers")
+          .child(userId)
+          .child("finishedAt")
+          .set(firebase.database.ServerValue.TIMESTAMP);
+      }}
+      onSolve={() => {
+        raceRef
+          .child("racers")
+          .child(userId)
+          .child("currentPuzzleIndex")
+          .set(firebase.database.ServerValue.increment(1));
+      }}
+    />
   );
 };
 
@@ -307,6 +272,89 @@ const JoinRace: React.FC<{ onJoin: (name: string) => Promise<void> }> = ({
           Join
         </Button>
       </Container>
+    </Box>
+  );
+};
+
+const PlayRace: React.FC<{
+  race: RaceType;
+  userId: string;
+  time: string;
+  onSolve: () => void;
+  onFinish: () => void;
+}> = ({ race, userId, time, onSolve, onFinish }) => {
+  const racer = race.racers[userId];
+  const puzzle = race.puzzleList[racer.currentPuzzleIndex];
+
+  if (racer.finishedAt) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        flexDirection="column"
+      >
+        <Container maxWidth="sm">
+          <Typography variant="h5" align="center">
+            Finished
+          </Typography>
+
+          <Typography variant="body1" align="center">
+            You finished the race, wait other to finish.
+          </Typography>
+        </Container>
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      width="100%"
+      height="100%"
+      maxWidth={768}
+      margin="auto"
+    >
+      <Box height={60}>Puzzle Race</Box>
+      <Box flex={1}>
+        <PuzzleBoard
+          fen={puzzle.startFen}
+          solution={puzzle.solution}
+          movable={true}
+          onIncorrectMove={() => console.log("Incorrect move")}
+          onSolve={() => {
+            if (race.puzzleList.length - 1 === racer.currentPuzzleIndex) {
+              setTimeout(() => {
+                onFinish();
+              }, 1000);
+            } else {
+              setTimeout(() => {
+                onSolve();
+              }, 500);
+            }
+          }}
+          onCorrectMove={() => console.log("Correct Move")}
+        />
+      </Box>
+
+      <Box padding={2}>
+        <Grid container justify="space-between">
+          <Grid>
+            <Typography variant="h5">Puzzles</Typography>
+          </Grid>
+          <Grid>
+            <Typography variant="h5">Time left</Typography>
+          </Grid>
+        </Grid>
+        <Grid container justify="space-between">
+          <Grid>
+            {racer.currentPuzzleIndex}/{race.puzzleList.length}
+          </Grid>
+          <Grid>{time}</Grid>
+        </Grid>
+      </Box>
     </Box>
   );
 };
