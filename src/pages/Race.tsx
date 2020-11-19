@@ -44,6 +44,39 @@ const Race: React.FC<Props> = () => {
     );
   }
 
+  if (Object.values(race.racers).every((racer) => racer.finishedAt)) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        flexDirection="column"
+      >
+        <Container maxWidth="sm">
+          <Typography variant="h5" align="center">
+            Finished
+          </Typography>
+
+          <Typography variant="body1" align="center">
+            The has ended
+          </Typography>
+          <Box height={8} />
+          <Button
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={() => {
+              raceRef.child("state").set("starting");
+            }}
+          >
+            Start
+          </Button>
+        </Container>
+      </Box>
+    );
+  }
+
   if (!Object.keys(race.racers).includes(userId)) {
     return (
       <Box
@@ -138,39 +171,6 @@ const Race: React.FC<Props> = () => {
           raceRef.child("state").set("started");
         }}
       />
-    );
-  }
-
-  if (Object.values(race.racers).every((racer) => racer.finishedAt)) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-        flexDirection="column"
-      >
-        <Container maxWidth="sm">
-          <Typography variant="h5" align="center">
-            Finished
-          </Typography>
-
-          <Typography variant="body1" align="center">
-            The has ended
-          </Typography>
-          <Box height={8} />
-          <Button
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={() => {
-              raceRef.child("state").set("starting");
-            }}
-          >
-            Start
-          </Button>
-        </Container>
-      </Box>
     );
   }
 
