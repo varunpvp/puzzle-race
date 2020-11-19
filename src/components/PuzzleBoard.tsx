@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ShortMove } from "chess.js";
+import { ChessInstance, ShortMove } from "chess.js";
 import ReactResizeDetector from "react-resize-detector";
 import Chessboard from "chessboardjsx";
 const Chess = require("chess.js");
@@ -22,52 +22,50 @@ const PuzzleBoard: React.FC<Props> = ({
   movable,
 }) => {
   const [chess, setChess] = useState(new Chess(initialFen));
-  const [fen, setFen] = useState(chess.fen());
   const [orientation, setOrientation] = useState(chess.turn());
   const [solution, setSolution] = useState<ShortMove[]>(initialSolution);
 
   useEffect(() => {
     const newChess = new Chess(initialFen);
     setChess(newChess);
-    setFen(newChess.fen());
     setOrientation(newChess.turn());
     setSolution(initialSolution);
   }, [initialFen, initialSolution]);
 
   const handleMove = async (move: ShortMove) => {
-    if (solution.length === 0) {
+    const result = makeMove(chess, move, solution);
+
+    if (!result) {
+      return onIncorrectMove();
+    }
+
+    setChess(result.chess);
+    setSolution(result.solution);
+
+    if (result.solution.length === 0) {
       return onSolve();
+    } else {
+      onCorrectMove && onCorrectMove();
     }
 
-    const correctMove = solution[0];
+    // make computer's move
 
-    if (
-      move.from !== correctMove.from ||
-      move.to !== correctMove.to ||
-      move.promotion !== correctMove.promotion
-    ) {
-      onIncorrectMove();
-      return;
-    }
+    setTimeout(() => {
+      const computerResult = makeMove(
+        result.chess,
+        result.solution[0],
+        result.solution
+      );
 
-    // correct move; proceed to respond
-    if (chess.move(move)) {
-      setFen(chess.fen());
-      if (solution.length === 0) {
-        onSolve();
-      } else {
-        onCorrectMove && onCorrectMove();
-        setTimeout(() => {
-          chess.move(solution[1]);
-          setFen(chess.fen());
-          if (solution.length === 2) {
-            onSolve();
-          } else {
-            setSolution(solution.slice(2));
-          }
-        }, 1);
+      if (computerResult) {
+        setChess(computerResult.chess);
+        setSolution(computerResult.solution);
+
+        if (computerResult.solution.length === 0) {
+          return onSolve();
+        }
       }
-    }
+    }, 500);
   };
 
   return (
@@ -79,7 +77,7 @@ const PuzzleBoard: React.FC<Props> = ({
             <Chessboard
               boardStyle={{ background: "black" }}
               orientation={orientation}
-              position={fen}
+              position={chess.fen()}
               width={size}
               draggable={movable && solution.length > 0}
               onDrop={({ sourceSquare, targetSquare }) =>
@@ -93,5 +91,34 @@ const PuzzleBoard: React.FC<Props> = ({
     </ReactResizeDetector>
   );
 };
+
+function makeMove(
+  chess: ChessInstance,
+  move: ShortMove,
+  solution: ShortMove[]
+): null | { solution: ShortMove[]; chess: ChessInstance } {
+  if (solution.length === 0) {
+    return null;
+  }
+
+  const correctMove = solution[0];
+
+  if (
+    move.from !== correctMove.from ||
+    move.to !== correctMove.to ||
+    move.promotion !== correctMove.promotion
+  ) {
+    return null;
+  }
+
+  if (!chess.move(move)) {
+    return null;
+  }
+
+  return {
+    chess: new Chess(chess.fen()),
+    solution: solution.slice(1),
+  };
+}
 
 export default PuzzleBoard;
