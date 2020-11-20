@@ -60,7 +60,7 @@ const RaceCreate: React.FC = () => {
         time: values.time,
         racers: {
           [hostId]: {
-            name: "Racer 1",
+            name: values.name,
             currentPuzzleIndex: 0,
           },
         },
@@ -87,7 +87,7 @@ const RaceCreate: React.FC = () => {
       <Controller
         name="name"
         control={control}
-        as={<TextField variant="outlined" placeholder="Race name" fullWidth />}
+        as={<TextField variant="outlined" placeholder="Name" fullWidth />}
       />
 
       <Box height={8} />
