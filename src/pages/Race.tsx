@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import firebase from "firebase/app";
+import _ from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import { RouteComponentProps, useParams } from "react-router-dom";
 import PuzzleBoard from "../components/PuzzleBoard";
@@ -283,7 +284,7 @@ const PlayRace: React.FC<{
     const seconds = parseInt(`${(timeLeft % 60000) / 1000}`);
 
     if (timeLeft > 0) {
-      setTime(`${minutes}:${seconds}`);
+      setTime(`${minutes}:${_.padStart(String(seconds), 2, "0")}`);
       setTimeout(tickTimer, 1000);
     } else {
       onTimeout();

@@ -20,6 +20,7 @@ import shortid from "shortid";
 import { Auth, Database } from "../config/Firebase";
 import { puzzleList } from "../constants";
 import Race from "../types/Race";
+import _ from "lodash";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -53,7 +54,7 @@ const RaceCreate: React.FC = () => {
       const race: Race = {
         hostId,
         name: values.name,
-        puzzleList: puzzleList,
+        puzzleList: _.sampleSize(puzzleList, values.puzzleCount),
         state: "waiting",
         startedAt: null,
         createdAt: firebase.database.ServerValue.TIMESTAMP,

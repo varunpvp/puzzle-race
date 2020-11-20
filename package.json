@@ -15,6 +15,7 @@
     "chess.js": "^0.11.0",
     "chessboardjsx": "^2.4.2",
     "firebase": "^8.0.2",
+    "lodash": "^4.17.20",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hook-form": "^6.11.3",
@@ -52,6 +53,7 @@
   "devDependencies": {
     "@types/accurate-interval": "^1.0.0",
     "@types/chess.js": "^0.10.1",
+    "@types/lodash": "^4.14.165",
     "@types/react-resize-detector": "^5.0.0",
     "@types/react-router-dom": "^5.1.6",
     "@types/shortid": "^0.0.29"
