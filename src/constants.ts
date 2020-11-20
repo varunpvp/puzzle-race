@@ -1,4 +1,13 @@
 import Puzzle from "./types/Puzzle";
+import { Howl } from "howler";
+
+export const moveSound = new Howl({
+  src: ["/move.mp3"],
+});
+
+export const errorSound = new Howl({
+  src: ["/error.mp3"],
+});
 
 export const START_FEN =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";

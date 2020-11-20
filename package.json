@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -15,6 +16,7 @@
     "chess.js": "^0.11.0",
     "chessboardjsx": "^2.4.2",
     "firebase": "^8.0.2",
+    "howler": "^2.2.1",
     "lodash": "^4.17.20",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -53,6 +55,7 @@
   "devDependencies": {
     "@types/accurate-interval": "^1.0.0",
     "@types/chess.js": "^0.10.1",
+    "@types/howler": "^2.2.1",
     "@types/lodash": "^4.14.165",
     "@types/react-resize-detector": "^5.0.0",
     "@types/react-router-dom": "^5.1.6",

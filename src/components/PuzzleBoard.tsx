@@ -71,9 +71,17 @@ const PuzzleBoard: React.FC<Props> = ({
   return (
     <ReactResizeDetector handleHeight handleWidth>
       {({ width, height }: { width: number; height: number }) => {
-        const size = Math.min(width, height) || 400;
+        const size = Math.min(width, height, 500) || 400;
         return (
-          <div style={{ width: "100%", height: "100%" }}>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <Chessboard
               boardStyle={{ margin: "auto" }}
               orientation={orientation}

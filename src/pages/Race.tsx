@@ -4,6 +4,7 @@ import {
   CircularProgress,
   Container,
   Grid,
+  Snackbar,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -13,7 +14,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { RouteComponentProps, useParams } from "react-router-dom";
 import PuzzleBoard from "../components/PuzzleBoard";
 import { Auth, Database, getFirebaseServerTimestamp } from "../config/Firebase";
+import { errorSound, moveSound, puzzleList } from "../constants";
 import RaceType from "../types/Race";
+import Alert from "@material-ui/lab/Alert";
+const Chess = require("chess.js");
 
 interface Props extends RouteComponentProps<{ raceId: string }> {}
 
@@ -65,7 +69,7 @@ const Race: React.FC<Props> = () => {
           </Typography>
 
           <Typography variant="body1" align="center">
-            The has ended
+            The race has ended
           </Typography>
         </Container>
       </Box>
@@ -267,8 +271,13 @@ const PlayRace: React.FC<{
 }> = ({ race, userId, onSolve, onFinish, onTimeout }) => {
   const racer = race.racers[userId];
   const puzzle = race.puzzleList[racer.currentPuzzleIndex];
-
+  const chess = new Chess(puzzle.startFen);
   const [time, setTime] = useState("0:00");
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const tickTimer = useCallback(async () => {
     if (!race) {
@@ -332,25 +341,31 @@ const PlayRace: React.FC<{
       maxWidth={768}
       margin="auto"
     >
-      <Box height={60}>Puzzle Race</Box>
+      <Box height={60}>{chess.turn() === "w" ? "White" : "Black"} to move</Box>
       <Box flex={1}>
         <PuzzleBoard
           fen={puzzle.startFen}
           solution={puzzle.solution}
           movable={true}
-          onIncorrectMove={() => console.log("Incorrect move")}
+          onIncorrectMove={() => {
+            errorSound.play();
+          }}
           onSolve={() => {
+            setOpen(true);
+            moveSound.play();
             if (race.puzzleList.length - 1 === racer.currentPuzzleIndex) {
               setTimeout(() => {
                 onFinish();
-              }, 1000);
+              }, 500);
             } else {
               setTimeout(() => {
                 onSolve();
-              }, 1000);
+              }, 500);
             }
           }}
-          onCorrectMove={() => console.log("Correct Move")}
+          onCorrectMove={() => {
+            moveSound.play();
+          }}
         />
       </Box>
 
@@ -370,6 +385,11 @@ const PlayRace: React.FC<{
           <Grid>{time}</Grid>
         </Grid>
       </Box>
+      <Snackbar open={open} autoHideDuration={500} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success">
+          Solved!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
