@@ -20,42 +20,18 @@ const Race: React.FC<Props> = () => {
   const userId = Auth.currentUser?.uid!;
   const params = useParams<{ raceId: string }>();
   const [race, setRace] = useState<null | RaceType>(null);
-  const [time, setTime] = useState("0:00");
   const [raceRef] = useState(Database.ref("race").child(params.raceId));
-
-  const tickTimer = useCallback(async () => {
-    if (!race) {
-      return;
-    }
-
-    const serverTime = await getFirebaseServerTimestamp();
-
-    const timePassed = serverTime - race.startedAt;
-    const timeLeft = race.time * 1000 - timePassed;
-
-    const minutes = parseInt(`${timeLeft / 60000}`);
-    const seconds = parseInt(`${(timeLeft % 60000) / 1000}`);
-
-    if (timeLeft > 0) {
-      setTime(`${minutes}:${seconds}`);
-      setTimeout(tickTimer, 1000);
-    }
-  }, [race]);
-
-  const setupTimer = useCallback(() => {
-    setTimeout(tickTimer, 1000);
-  }, [tickTimer]);
 
   useEffect(() => {
     raceRef.on("value", (snapshot) => {
       setRace(snapshot.val());
-      setupTimer();
+      // setupTimer();
     });
 
     return () => {
       raceRef.off();
     };
-  }, [raceRef, setupTimer]);
+  }, [raceRef /* , setupTimer */]);
 
   if (race === null) {
     return (
@@ -70,7 +46,10 @@ const Race: React.FC<Props> = () => {
     );
   }
 
-  if (Object.values(race.racers).every((racer) => racer.finishedAt)) {
+  if (
+    Object.values(race.racers).every((racer) => racer.finishedAt) ||
+    race.state === "finished"
+  ) {
     return (
       <Box
         display="flex"
@@ -170,7 +149,6 @@ const Race: React.FC<Props> = () => {
   return (
     <PlayRace
       race={race}
-      time={time}
       userId={userId}
       onFinish={() => {
         raceRef
@@ -185,6 +163,9 @@ const Race: React.FC<Props> = () => {
           .child(userId)
           .child("currentPuzzleIndex")
           .set(firebase.database.ServerValue.increment(1));
+      }}
+      onTimeout={() => {
+        raceRef.child("state").set("finished");
       }}
     />
   );
@@ -279,12 +260,45 @@ const JoinRace: React.FC<{ onJoin: (name: string) => Promise<void> }> = ({
 const PlayRace: React.FC<{
   race: RaceType;
   userId: string;
-  time: string;
   onSolve: () => void;
   onFinish: () => void;
-}> = ({ race, userId, time, onSolve, onFinish }) => {
+  onTimeout: () => void;
+}> = ({ race, userId, onSolve, onFinish, onTimeout }) => {
   const racer = race.racers[userId];
   const puzzle = race.puzzleList[racer.currentPuzzleIndex];
+
+  const [time, setTime] = useState("0:00");
+
+  const tickTimer = useCallback(async () => {
+    if (!race) {
+      return;
+    }
+
+    const serverTime = await getFirebaseServerTimestamp();
+
+    const timePassed = serverTime - race.startedAt;
+    const timeLeft = race.time * 1000 - timePassed;
+
+    const minutes = parseInt(`${timeLeft / 60000}`);
+    const seconds = parseInt(`${(timeLeft % 60000) / 1000}`);
+
+    if (timeLeft > 0) {
+      setTime(`${minutes}:${seconds}`);
+      setTimeout(tickTimer, 1000);
+    } else {
+      onTimeout();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const setupTimer = useCallback(() => {
+    setTimeout(tickTimer, 1000);
+  }, [tickTimer]);
+
+  useEffect(() => {
+    setupTimer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (racer.finishedAt) {
     return (
@@ -332,7 +346,7 @@ const PlayRace: React.FC<{
             } else {
               setTimeout(() => {
                 onSolve();
-              }, 500);
+              }, 1000);
             }
           }}
           onCorrectMove={() => console.log("Correct Move")}
