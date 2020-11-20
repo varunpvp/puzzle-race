@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Chip,
   CircularProgress,
   Container,
   Grid,
@@ -14,10 +15,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { RouteComponentProps, useParams } from "react-router-dom";
 import PuzzleBoard from "../components/PuzzleBoard";
 import { Auth, Database, getFirebaseServerTimestamp } from "../config/Firebase";
-import { errorSound, moveSound, puzzleList } from "../constants";
+import { errorSound, moveSound } from "../constants";
 import RaceType from "../types/Race";
 import Alert from "@material-ui/lab/Alert";
-const Chess = require("chess.js");
+import Avatar from "@material-ui/core/Avatar/Avatar";
 
 interface Props extends RouteComponentProps<{ raceId: string }> {}
 
@@ -271,7 +272,6 @@ const PlayRace: React.FC<{
 }> = ({ race, userId, onSolve, onFinish, onTimeout }) => {
   const racer = race.racers[userId];
   const puzzle = race.puzzleList[racer.currentPuzzleIndex];
-  const chess = new Chess(puzzle.startFen);
   const [time, setTime] = useState("0:00");
   const [open, setOpen] = React.useState(false);
 
@@ -341,7 +341,26 @@ const PlayRace: React.FC<{
       maxWidth={768}
       margin="auto"
     >
-      <Box height={60}>{chess.turn() === "w" ? "White" : "Black"} to move</Box>
+      <Box height={60} paddingTop={1}>
+        {_.values(race.racers).map((r) => (
+          <Box
+            key={r.name}
+            boxShadow="0px 0px 5px 0px #cccccc"
+            borderRadius={5}
+            padding={1}
+            width={120}
+          >
+            <Box>
+              <Typography variant="body1">{r.name}</Typography>
+            </Box>
+            <Box>
+              <Typography variant="body2">
+                {r.currentPuzzleIndex}/{race.puzzleList.length} puzzle
+              </Typography>
+            </Box>
+          </Box>
+        ))}
+      </Box>
       <Box flex={1}>
         <PuzzleBoard
           fen={puzzle.startFen}
