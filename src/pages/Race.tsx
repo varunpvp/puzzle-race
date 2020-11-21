@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Chip,
   CircularProgress,
   Container,
   Grid,
@@ -18,7 +17,7 @@ import { Auth, Database, getFirebaseServerTimestamp } from "../config/Firebase";
 import { errorSound, moveSound } from "../constants";
 import RaceType from "../types/Race";
 import Alert from "@material-ui/lab/Alert";
-import Avatar from "@material-ui/core/Avatar/Avatar";
+import Racer from "../types/Racer";
 
 interface Props extends RouteComponentProps<{ raceId: string }> {}
 
@@ -31,13 +30,12 @@ const Race: React.FC<Props> = () => {
   useEffect(() => {
     raceRef.on("value", (snapshot) => {
       setRace(snapshot.val());
-      // setupTimer();
     });
 
     return () => {
       raceRef.off();
     };
-  }, [raceRef /* , setupTimer */]);
+  }, [raceRef]);
 
   if (race === null) {
     return (
@@ -273,7 +271,7 @@ const PlayRace: React.FC<{
   const racer = race.racers[userId];
   const puzzle = race.puzzleList[racer.currentPuzzleIndex];
   const [time, setTime] = useState("0:00");
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -341,13 +339,14 @@ const PlayRace: React.FC<{
       maxWidth={768}
       margin="auto"
     >
-      <Box height={60} paddingTop={1}>
-        {_.values(race.racers).map((r) => (
+      <Box height={60} paddingTop={1} display="flex">
+        {sortRacers(_.values(race.racers)).map((r) => (
           <Box
             key={r.name}
             boxShadow="0px 0px 5px 0px #cccccc"
             borderRadius={5}
             padding={1}
+            marginX={1}
             width={120}
           >
             <Box>
@@ -372,15 +371,14 @@ const PlayRace: React.FC<{
           onSolve={() => {
             setOpen(true);
             moveSound.play();
-            if (race.puzzleList.length - 1 === racer.currentPuzzleIndex) {
-              setTimeout(() => {
+
+            setTimeout(() => {
+              if (race.puzzleList.length - 1 === racer.currentPuzzleIndex) {
                 onFinish();
-              }, 500);
-            } else {
-              setTimeout(() => {
+              } else {
                 onSolve();
-              }, 500);
-            }
+              }
+            }, 500);
           }}
           onCorrectMove={() => {
             moveSound.play();
@@ -412,5 +410,9 @@ const PlayRace: React.FC<{
     </Box>
   );
 };
+
+function sortRacers(racers: Omit<Racer, "id">[]) {
+  return _.orderBy(racers, "currentPuzzleIndex", "desc");
+}
 
 export default Race;
