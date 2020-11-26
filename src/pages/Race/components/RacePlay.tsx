@@ -9,9 +9,7 @@ import RaceStanding from "./RaceStanding";
 
 const RacePlay: React.FC<{
   race: Race;
-  onSolve: () => void;
-  onFinish: () => void;
-}> = ({ race, onSolve, onFinish }) => {
+}> = ({ race }) => {
   const racer = race.currentRacer!;
   const puzzle = race.currentPuzzle;
   const snackbar = useSnackbar();
@@ -90,9 +88,9 @@ const RacePlay: React.FC<{
 
             setTimeout(() => {
               if (race.puzzleList.length - 1 === racer.currentPuzzleIndex) {
-                onFinish();
+                race.currentRacer?.finish();
               } else {
-                onSolve();
+                race.currentRacer?.goToNext();
               }
             }, 500);
           }}

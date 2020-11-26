@@ -64,17 +64,7 @@ const Race: React.FC<Props> = () => {
     );
   }
 
-  return (
-    <RacePlay
-      race={race}
-      onFinish={() => {
-        race.currentRacer?.finish();
-      }}
-      onSolve={() => {
-        race.currentRacer?.goToNext();
-      }}
-    />
-  );
+  return <RacePlay race={race} />;
 };
 
 export default Race;
