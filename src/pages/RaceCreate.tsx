@@ -88,7 +88,7 @@ const RaceCreate: React.FC = () => {
       <Controller
         name="name"
         control={control}
-        as={<TextField variant="outlined" placeholder="Name" fullWidth />}
+        as={<TextField variant="outlined" placeholder="Your name" fullWidth />}
       />
 
       <Box height={8} />
@@ -98,7 +98,7 @@ const RaceCreate: React.FC = () => {
         fullWidth
         onClick={() => setDetailsDialogOpen(true)}
       >
-        Create Race
+        Start Race
       </Button>
       <Dialog
         open={detailsDialogOpen}
