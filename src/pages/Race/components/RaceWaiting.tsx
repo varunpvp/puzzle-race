@@ -25,6 +25,14 @@ const RaceWaiting: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const joinStatus =
+    _.size(race.racers) === 1
+      ? "Waiting for players to join"
+      : `${_.entries(race.racers)
+          .filter(([id]) => id === race.hostId)
+          .map(([, r]) => r.name)
+          .join(", ")} has joined`;
+
   if (race.hostId === userId) {
     return (
       <Box
@@ -40,11 +48,7 @@ const RaceWaiting: React.FC<{
           </Typography>
 
           <Typography variant="body1" align="center">
-            {_.size(race.racers) === 1
-              ? "Waiting for players to join"
-              : `${_.values(race.racers)
-                  .map((r) => r.name)
-                  .join(", ")} have joined`}
+            {joinStatus}
           </Typography>
           <Box height={12} />
           <Button
@@ -81,11 +85,7 @@ const RaceWaiting: React.FC<{
         Waiting for race to start
       </Typography>
       <Typography variant="body1" align="center">
-        {_.size(race.racers) === 1
-          ? "Waiting for players to join"
-          : `${_.values(race.racers)
-              .map((r) => r.name)
-              .join(", ")} have joined`}
+        {joinStatus}
       </Typography>
       <Box height={12} />
       <Button
