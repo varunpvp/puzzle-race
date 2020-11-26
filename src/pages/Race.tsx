@@ -1,9 +1,14 @@
 import {
+  Avatar,
   Box,
   Button,
   CircularProgress,
   Container,
   Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Snackbar,
   TextField,
   Typography,
@@ -18,6 +23,7 @@ import { errorSound, moveSound } from "../constants";
 import RaceType from "../types/Race";
 import Alert from "@material-ui/lab/Alert";
 import Racer from "../types/Racer";
+import { formatTime } from "../utils/utils";
 
 interface Props extends RouteComponentProps<{ raceId: string }> {}
 
@@ -70,6 +76,28 @@ const Race: React.FC<Props> = () => {
           <Typography variant="body1" align="center">
             The race has ended
           </Typography>
+
+          <List>
+            {sortRacers(Object.values(race.racers)).map((r, i) => {
+              return (
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>{i + 1}</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={r.name}
+                    secondary={
+                      r.finishedAt
+                        ? `Finished in ${formatTime(
+                            r.finishedAt - race.startedAt
+                          )}`
+                        : `Solved ${r.currentPuzzleIndex} of ${race.puzzleList.length} puzzles`
+                    }
+                  />
+                </ListItem>
+              );
+            })}
+          </List>
         </Container>
       </Box>
     );
@@ -287,11 +315,8 @@ const PlayRace: React.FC<{
     const timePassed = serverTime - race.startedAt;
     const timeLeft = race.time * 1000 - timePassed;
 
-    const minutes = parseInt(`${timeLeft / 60000}`);
-    const seconds = parseInt(`${(timeLeft % 60000) / 1000}`);
-
     if (timeLeft > 0) {
-      setTime(`${minutes}:${_.padStart(String(seconds), 2, "0")}`);
+      setTime(formatTime(timeLeft));
       setTimeout(tickTimer, 1000);
     } else {
       onTimeout();
@@ -353,9 +378,15 @@ const PlayRace: React.FC<{
               <Typography variant="body1">{r.name}</Typography>
             </Box>
             <Box>
-              <Typography variant="body2">
-                {r.currentPuzzleIndex}/{race.puzzleList.length} puzzle
-              </Typography>
+              {r.finishedAt ? (
+                <Typography variant="body2">
+                  Finished in {formatTime(r.finishedAt - race.startedAt)}
+                </Typography>
+              ) : (
+                <Typography variant="body2">
+                  {r.currentPuzzleIndex}/{race.puzzleList.length} puzzle
+                </Typography>
+              )}
             </Box>
           </Box>
         ))}
