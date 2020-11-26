@@ -8,18 +8,24 @@ import RaceJoin from "./components/RaceJoin";
 import RaceWaiting from "./components/RaceWaiting";
 import RaceCountDown from "./components/RaceCoutDown";
 import RacePlay from "./components/RacePlay";
+import { observer } from "mobx-react";
 
 interface Props extends RouteComponentProps<{ raceId: string }> {}
 
+@observer
 class Race extends Component<Props> {
   userId = Auth.currentUser?.uid!;
   race = new RaceModel(this.props.match.params.raceId, this.userId);
+
+  componentDidMount() {
+    this.race.subscribe();
+  }
 
   render() {
     const race = this.race;
     const userId = this.userId;
 
-    if (race === null) {
+    if (!race.loaded) {
       return (
         <Box
           display="flex"

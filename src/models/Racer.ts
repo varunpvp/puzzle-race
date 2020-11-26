@@ -1,12 +1,13 @@
 import firebase from "firebase/app";
 import { Database } from "../config/Firebase";
 import IRacer from "../entities/IRacer";
+import { observable } from "mobx";
 
 export default class Racer implements IRacer {
-  id: string;
-  name: string;
-  currentPuzzleIndex: number;
-  finishedAt?: number;
+  @observable id: string;
+  @observable name: string;
+  @observable currentPuzzleIndex: number;
+  @observable finishedAt?: number;
 
   ref: firebase.database.Reference;
 

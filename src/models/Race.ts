@@ -4,21 +4,27 @@ import IRace from "../entities/IRace";
 import { formatTime, objectToList, sortRacerList } from "../utils/utils";
 import Puzzle from "./Puzzle";
 import Racer from "./Racer";
+import { observable, action, computed } from "mobx";
 
 export default class Race implements IRace {
-  id: string;
-  userId: string;
-  hostId: string = "";
-  name: string = "";
-  puzzleList: Puzzle[] = [];
-  state: "waiting" | "starting" | "started" | "finished" | "aborted" =
-    "waiting";
-  startedAt: any;
-  createdAt: any;
-  time: number = 0;
-  racerList: Racer[] = [];
+  @observable id: string;
+  @observable userId: string;
+  @observable hostId: string = "";
+  @observable name: string = "";
+  @observable puzzleList: Puzzle[] = [];
+  @observable state:
+    | "waiting"
+    | "starting"
+    | "started"
+    | "finished"
+    | "aborted" = "waiting";
+  @observable startedAt: any;
+  @observable createdAt: any;
+  @observable time: number = 0;
+  @observable racerList: Racer[] = [];
 
-  timeLeft: number = 0;
+  @observable timeLeft: number = 0;
+  @observable loaded = false;
 
   ref: firebase.database.Reference;
 
@@ -58,6 +64,7 @@ export default class Race implements IRace {
           puzzleList: objectToList(snapshot.val().puzzleList),
           racerList: objectToList(snapshot.val().racers),
         });
+        this.setLoaded(true);
       }
     });
     this.tickTimer();
@@ -67,6 +74,7 @@ export default class Race implements IRace {
     this.ref.off();
   }
 
+  @computed
   get isFinished() {
     return (
       this.racerList.every((racer) => racer.finishedAt) ||
@@ -74,10 +82,12 @@ export default class Race implements IRace {
     );
   }
 
+  @computed
   get currentRacer() {
     return this.racerList.find((it) => it.id === this.userId);
   }
 
+  @computed
   get currentPuzzle() {
     return this.puzzleList[this.currentRacer?.currentPuzzleIndex ?? 0];
   }
@@ -86,18 +96,27 @@ export default class Race implements IRace {
     return this.racerList.find((it) => it.id === id) !== null;
   }
 
+  @computed
   get sortedRacerList() {
     return sortRacerList(this.racerList);
   }
 
+  @computed
   get formattedTimeLeft() {
     return formatTime(this.timeLeft);
   }
 
+  @computed
   get isLastPuzzle() {
     return this.puzzleList.length - 1 === this.currentRacer?.currentPuzzleIndex;
   }
 
+  @action
+  setLoaded(loaded: boolean) {
+    this.loaded = loaded;
+  }
+
+  @action
   private async tickTimer() {
     const serverTime = await getFirebaseServerTimestamp();
 
@@ -113,6 +132,7 @@ export default class Race implements IRace {
     }
   }
 
+  @action
   private update({
     hostId,
     name,
