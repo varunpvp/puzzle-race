@@ -17,9 +17,9 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import shortid from "shortid";
-import { Auth, Database } from "../config/Firebase";
-import { puzzleList } from "../constants";
-import Race from "../types/Race";
+import { Auth, Database } from "../../config/Firebase";
+import { puzzleList } from "../../constants";
+import Race from "../../types/Race";
 import _ from "lodash";
 
 const useStyles = makeStyles(() =>

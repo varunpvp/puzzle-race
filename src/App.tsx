@@ -1,8 +1,8 @@
 import { Snackbar } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Race from "./pages/Race";
-import RaceCreate from "./pages/RaceCreate";
+import Race from "./pages/Race/Race";
+import RaceCreate from "./pages/RaceCreate/RaceCreate";
 import Alert from "@material-ui/lab/Alert";
 
 type SnackbarContextType = {

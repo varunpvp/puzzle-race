@@ -16,14 +16,18 @@ import firebase from "firebase/app";
 import _ from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import { RouteComponentProps, useParams } from "react-router-dom";
-import PuzzleBoard from "../components/PuzzleBoard";
-import { Auth, Database, getFirebaseServerTimestamp } from "../config/Firebase";
-import { errorSound, moveSound } from "../constants";
-import RaceType from "../types/Race";
-import Racer from "../types/Racer";
-import { formatTime } from "../utils/utils";
+import PuzzleBoard from "../../components/PuzzleBoard";
+import {
+  Auth,
+  Database,
+  getFirebaseServerTimestamp,
+} from "../../config/Firebase";
+import { errorSound, moveSound } from "../../constants";
+import RaceType from "../../types/Race";
+import Racer from "../../types/Racer";
+import { formatTime } from "../../utils/utils";
 import ClipboardJS from "clipboard";
-import { useSnackbar } from "../App";
+import { useSnackbar } from "../../App";
 
 interface Props extends RouteComponentProps<{ raceId: string }> {}
 
