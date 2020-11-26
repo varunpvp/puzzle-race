@@ -9,7 +9,6 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Snackbar,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -21,9 +20,10 @@ import PuzzleBoard from "../components/PuzzleBoard";
 import { Auth, Database, getFirebaseServerTimestamp } from "../config/Firebase";
 import { errorSound, moveSound } from "../constants";
 import RaceType from "../types/Race";
-import Alert from "@material-ui/lab/Alert";
 import Racer from "../types/Racer";
 import { formatTime } from "../utils/utils";
+import ClipboardJS from "clipboard";
+import { useSnackbar } from "../App";
 
 interface Props extends RouteComponentProps<{ raceId: string }> {}
 
@@ -32,16 +32,25 @@ const Race: React.FC<Props> = () => {
   const params = useParams<{ raceId: string }>();
   const [race, setRace] = useState<null | RaceType>(null);
   const [raceRef] = useState(Database.ref("race").child(params.raceId));
+  const snackbar = useSnackbar();
 
   useEffect(() => {
+    const clipboard = new ClipboardJS(".copy-invite-link");
+
+    clipboard.on("success", function () {
+      snackbar.show("Copied!");
+    });
+
     raceRef.on("value", (snapshot) => {
       setRace(snapshot.val());
     });
 
     return () => {
+      clipboard.destroy();
       raceRef.off();
     };
-  }, [raceRef]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (race === null) {
     return (
@@ -134,7 +143,7 @@ const Race: React.FC<Props> = () => {
             <Typography variant="body1" align="center">
               for you to start the race
             </Typography>
-            <Box height={8} />
+            <Box height={12} />
             <Button
               color="primary"
               variant="contained"
@@ -144,6 +153,15 @@ const Race: React.FC<Props> = () => {
               }}
             >
               Start
+            </Button>
+            <Box height={8} />
+            <Button
+              className="copy-invite-link"
+              fullWidth
+              variant="outlined"
+              data-clipboard-text={window.location.href}
+            >
+              Copy Invite Link
             </Button>
           </Container>
         </Box>
@@ -161,6 +179,14 @@ const Race: React.FC<Props> = () => {
         <Typography variant="h5" align="center">
           Waiting for race to start
         </Typography>
+        <Box height={12} />
+        <Button
+          className="copy-invite-link"
+          variant="outlined"
+          data-clipboard-text={window.location.href}
+        >
+          Copy Invite Link
+        </Button>
       </Box>
     );
   }
@@ -299,11 +325,7 @@ const PlayRace: React.FC<{
   const racer = race.racers[userId];
   const puzzle = race.puzzleList[racer.currentPuzzleIndex];
   const [time, setTime] = useState("0:00");
-  const [open, setOpen] = useState(false);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const snackbar = useSnackbar();
 
   const tickTimer = useCallback(async () => {
     if (!race) {
@@ -348,7 +370,7 @@ const PlayRace: React.FC<{
           </Typography>
 
           <Typography variant="body1" align="center">
-            You finished the race, wait other to finish.
+            You finished the race, wait for others to finish.
           </Typography>
         </Container>
       </Box>
@@ -400,7 +422,7 @@ const PlayRace: React.FC<{
             errorSound.play();
           }}
           onSolve={() => {
-            setOpen(true);
+            snackbar.show("Solved!");
             moveSound.play();
 
             setTimeout(() => {
@@ -433,11 +455,6 @@ const PlayRace: React.FC<{
           <Grid>{time}</Grid>
         </Grid>
       </Box>
-      <Snackbar open={open} autoHideDuration={500} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success">
-          Solved!
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };
