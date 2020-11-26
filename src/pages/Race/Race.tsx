@@ -2,7 +2,7 @@ import { Box, CircularProgress } from "@material-ui/core";
 import React, { Component } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Auth } from "../../config/Firebase";
-import RaceType from "../../models/Race";
+import RaceModel from "../../models/Race";
 import RaceEnded from "./components/RaceEnded";
 import RaceJoin from "./components/RaceJoin";
 import RaceWaiting from "./components/RaceWaiting";
@@ -13,7 +13,7 @@ interface Props extends RouteComponentProps<{ raceId: string }> {}
 
 class Race extends Component<Props> {
   userId = Auth.currentUser?.uid!;
-  race = new RaceType(this.props.match.params.raceId, this.userId);
+  race = new RaceModel(this.props.match.params.raceId, this.userId);
 
   render() {
     const race = this.race;
