@@ -30,7 +30,7 @@ const RaceWaiting: React.FC<{
       ? "Waiting for players to join"
       : `${_.entries(race.racers)
           .map(([id, r]) => (id === userId ? "You" : r.name))
-          .join(", ")} has joined`;
+          .join(", ")} joined`;
 
   if (race.hostId === userId) {
     return (
