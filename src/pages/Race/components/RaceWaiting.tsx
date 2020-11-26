@@ -29,8 +29,8 @@ const RaceWaiting: React.FC<{
     _.size(race.racers) === 1
       ? "Waiting for players to join"
       : `${_.entries(race.racers)
-          .filter(([id]) => id === race.hostId)
-          .map(([, r]) => r.name)
+          .filter(([id]) => id !== race.hostId)
+          .map(([id, r]) => (id === userId ? "You" : r.name))
           .join(", ")} has joined`;
 
   if (race.hostId === userId) {
