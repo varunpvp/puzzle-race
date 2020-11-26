@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Container, Typography } from "@material-ui/core";
-import Race from "../../../types/Race";
 import RaceStanding from "./RaceStanding";
+import Race from "../../../models/Race";
 
 const RaceEnded: React.FC<{ race: Race }> = ({ race }) => {
   return (

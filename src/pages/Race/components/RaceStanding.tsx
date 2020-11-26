@@ -6,13 +6,14 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import React from "react";
-import Race from "../../../types/Race";
-import { sortRacers, formatTime } from "../../../utils/utils";
+import Race from "../../../models/Race";
+
+import { formatTime } from "../../../utils/utils";
 
 const RaceStanding: React.FC<{ race: Race }> = ({ race }) => {
   return (
     <List>
-      {sortRacers(Object.values(race.racers)).map((r, i) => {
+      {race.sortedRacerList.map((r, i) => {
         return (
           <ListItem>
             <ListItemAvatar>

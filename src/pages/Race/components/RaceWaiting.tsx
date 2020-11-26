@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import { Box, Container, Typography, Button } from "@material-ui/core";
-import _ from "lodash";
-import Race from "../../../types/Race";
 import { useSnackbar } from "../../../App";
 import ClipboardJS from "clipboard";
+import Race from "../../../models/Race";
 
 const RaceWaiting: React.FC<{
   userId: string;
@@ -22,14 +21,13 @@ const RaceWaiting: React.FC<{
     return () => {
       clipboard.destroy();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [snackbar]);
 
   const joinStatus =
-    _.size(race.racers) === 1
+    race.racerList.length === 1
       ? "Waiting for players to join"
-      : `${_.entries(race.racers)
-          .map(([id, r]) => (id === userId ? "You" : r.name))
+      : `${race.racerList
+          .map((r) => (r.id === userId ? "You" : r.name))
           .join(", ")} joined`;
 
   if (race.hostId === userId) {

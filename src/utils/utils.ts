@@ -8,10 +8,17 @@ export function formatTime(millis: number) {
   return `${minutes}:${_.padStart(String(seconds), 2, "0")}`;
 }
 
-export function sortRacers(racers: Omit<Racer, "id">[]) {
+export function sortRacerList(racerList: Racer[]) {
   return _.orderBy(
-    racers,
+    racerList,
     ["currentPuzzleIndex", "finishedAt"],
     ["desc", "asc"]
   );
+}
+
+export function objectToList<T>(obj: any, keyPropName = "id"): T[] {
+  return _.entries(obj).map(([key, value]: [string, any]) => ({
+    [keyPropName]: key,
+    ...value,
+  }));
 }

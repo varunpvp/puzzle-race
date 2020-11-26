@@ -1,53 +1,20 @@
 import { Box, Container, Typography, Grid } from "@material-ui/core";
-import _ from "lodash";
-import React, { useState, useCallback, useEffect } from "react";
+import React from "react";
 import { useSnackbar } from "../../../App";
 import PuzzleBoard from "../../../components/PuzzleBoard";
-import { getFirebaseServerTimestamp } from "../../../config/Firebase";
 import { errorSound, moveSound } from "../../../constants";
-import Race from "../../../types/Race";
-import { formatTime, sortRacers } from "../../../utils/utils";
+import Race from "../../../models/Race";
+import { formatTime } from "../../../utils/utils";
 import RaceStanding from "./RaceStanding";
 
 const RacePlay: React.FC<{
   race: Race;
-  userId: string;
   onSolve: () => void;
   onFinish: () => void;
-  onTimeout: () => void;
-}> = ({ race, userId, onSolve, onFinish, onTimeout }) => {
-  const racer = race.racers[userId];
-  const puzzle = race.puzzleList[racer.currentPuzzleIndex];
-  const [time, setTime] = useState("0:00");
+}> = ({ race, onSolve, onFinish }) => {
+  const racer = race.currentRacer!;
+  const puzzle = race.currentPuzzle;
   const snackbar = useSnackbar();
-
-  const tickTimer = useCallback(async () => {
-    if (!race) {
-      return;
-    }
-
-    const serverTime = await getFirebaseServerTimestamp();
-
-    const timePassed = serverTime - race.startedAt;
-    const timeLeft = race.time * 1000 - timePassed;
-
-    if (timeLeft > 0) {
-      setTime(formatTime(timeLeft));
-      setTimeout(tickTimer, 1000);
-    } else {
-      onTimeout();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const setupTimer = useCallback(() => {
-    setTimeout(tickTimer, 1000);
-  }, [tickTimer]);
-
-  useEffect(() => {
-    setupTimer();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (racer.finishedAt) {
     return (
@@ -83,7 +50,7 @@ const RacePlay: React.FC<{
       margin="auto"
     >
       <Box height={60} paddingTop={1} display="flex">
-        {sortRacers(_.values(race.racers)).map((r) => (
+        {race.sortedRacerList.map((r) => (
           <Box
             key={r.name}
             boxShadow="0px 0px 5px 0px #cccccc"
@@ -148,7 +115,7 @@ const RacePlay: React.FC<{
           <Grid>
             {racer.currentPuzzleIndex}/{race.puzzleList.length}
           </Grid>
-          <Grid>{time}</Grid>
+          <Grid>{race.formatedTimeLeft}</Grid>
         </Grid>
       </Box>
     </Box>
