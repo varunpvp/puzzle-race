@@ -141,7 +141,11 @@ const Race: React.FC<Props> = () => {
             </Typography>
 
             <Typography variant="body1" align="center">
-              for you to start the race
+              {_.size(race.racers) === 1
+                ? "Waiting for players to join"
+                : `${_.values(race.racers)
+                    .map((r) => r.name)
+                    .join(", ")} have joined`}
             </Typography>
             <Box height={12} />
             <Button
@@ -178,6 +182,13 @@ const Race: React.FC<Props> = () => {
       >
         <Typography variant="h5" align="center">
           Waiting for race to start
+        </Typography>
+        <Typography variant="body1" align="center">
+          {_.size(race.racers) === 1
+            ? "Waiting for players to join"
+            : `${_.values(race.racers)
+                .map((r) => r.name)
+                .join(", ")} have joined`}
         </Typography>
         <Box height={12} />
         <Button
@@ -372,6 +383,28 @@ const PlayRace: React.FC<{
           <Typography variant="body1" align="center">
             You finished the race, wait for others to finish.
           </Typography>
+
+          <List>
+            {sortRacers(Object.values(race.racers)).map((r, i) => {
+              return (
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>{i + 1}</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={r.name}
+                    secondary={
+                      r.finishedAt
+                        ? `Finished in ${formatTime(
+                            r.finishedAt - race.startedAt
+                          )}`
+                        : `Solved ${r.currentPuzzleIndex} of ${race.puzzleList.length} puzzles`
+                    }
+                  />
+                </ListItem>
+              );
+            })}
+          </List>
         </Container>
       </Box>
     );
