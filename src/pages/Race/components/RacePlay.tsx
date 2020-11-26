@@ -87,7 +87,7 @@ const RacePlay: React.FC<{
             moveSound.play();
 
             setTimeout(() => {
-              if (race.puzzleList.length - 1 === racer.currentPuzzleIndex) {
+              if (race.isLastPuzzle) {
                 race.currentRacer?.finish();
               } else {
                 race.currentRacer?.goToNext();
@@ -113,7 +113,7 @@ const RacePlay: React.FC<{
           <Grid>
             {racer.currentPuzzleIndex}/{race.puzzleList.length}
           </Grid>
-          <Grid>{race.formatedTimeLeft}</Grid>
+          <Grid>{race.formattedTimeLeft}</Grid>
         </Grid>
       </Box>
     </Box>

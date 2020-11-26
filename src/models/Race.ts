@@ -90,8 +90,12 @@ export default class Race implements IRace {
     return sortRacerList(this.racerList);
   }
 
-  get formatedTimeLeft() {
+  get formattedTimeLeft() {
     return formatTime(this.timeLeft);
+  }
+
+  get isLastPuzzle() {
+    return this.puzzleList.length - 1 === this.currentRacer?.currentPuzzleIndex;
   }
 
   private async tickTimer() {
