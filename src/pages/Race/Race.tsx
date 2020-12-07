@@ -2,27 +2,33 @@ import { Box, CircularProgress } from "@material-ui/core";
 import React, { Component } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Auth } from "../../config/Firebase";
-import RaceModel from "../../models/Race";
 import RaceEnded from "./components/RaceEnded";
 import RaceJoin from "./components/RaceJoin";
 import RaceWaiting from "./components/RaceWaiting";
 import RaceCountDown from "./components/RaceCoutDown";
 import RacePlay from "./components/RacePlay";
-import { observer } from "mobx-react";
+import { inject, observer } from "mobx-react";
+import RaceStore from "../../models/Race";
 
-interface Props extends RouteComponentProps<{ raceId: string }> {}
+interface Props extends RouteComponentProps<{ raceId: string }> {
+  race?: RaceStore;
+}
 
+@inject("race")
 @observer
 class Race extends Component<Props> {
   userId = Auth.currentUser?.uid!;
-  race = new RaceModel(this.props.match.params.raceId, this.userId);
 
   componentDidMount() {
-    this.race.subscribe();
+    this.props.race?.subscribe(this.props.match.params.raceId);
+  }
+
+  componentWillUnmount() {
+    this.props.race?.unsubscribe();
   }
 
   render() {
-    const race = this.race;
+    const race = this.props.race!;
     const userId = this.userId;
 
     if (!race.loaded) {

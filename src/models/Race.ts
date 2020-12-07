@@ -7,7 +7,7 @@ import Racer from "./Racer";
 import { observable, action, computed } from "mobx";
 
 export default class Race implements IRace {
-  @observable id: string;
+  @observable id: string = "";
   @observable userId: string;
   @observable hostId: string = "";
   @observable name: string = "";
@@ -26,12 +26,10 @@ export default class Race implements IRace {
   @observable timeLeft: number = 0;
   @observable loaded = false;
 
-  ref: firebase.database.Reference;
+  ref: firebase.database.Reference = Database.ref("/");
 
-  constructor(id: string, userId: string) {
-    this.id = id;
+  constructor(userId: string) {
     this.userId = userId;
-    this.ref = Database.ref("race").child(id);
   }
 
   async joinRacer(userId: string, name: string) {
@@ -56,7 +54,10 @@ export default class Race implements IRace {
     this.ref.child("state").set("finished");
   }
 
-  subscribe() {
+  subscribe(id: string) {
+    this.id = id;
+    this.ref = Database.ref("race").child(id);
+
     this.ref.on("value", (snapshot) => {
       if (snapshot.exists()) {
         this.update({
@@ -71,7 +72,9 @@ export default class Race implements IRace {
   }
 
   unsubscribe() {
-    this.ref.off();
+    if (this.ref) {
+      this.ref.off();
+    }
   }
 
   @computed

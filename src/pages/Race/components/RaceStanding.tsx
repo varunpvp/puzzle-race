@@ -15,7 +15,7 @@ const RaceStanding: React.FC<{ race: Race }> = ({ race }) => {
     <List>
       {race.sortedRacerList.map((r, i) => {
         return (
-          <ListItem>
+          <ListItem key={r.id}>
             <ListItemAvatar>
               <Avatar>{i + 1}</Avatar>
             </ListItemAvatar>
