@@ -44,10 +44,6 @@ class Race extends Component<Props> {
       );
     }
 
-    if (race.isFinished) {
-      return <RaceEnded race={race} />;
-    }
-
     if (!race.hasRacer(userId)) {
       return (
         <RaceJoin
@@ -76,6 +72,10 @@ class Race extends Component<Props> {
           }}
         />
       );
+    }
+
+    if (race.isFinished) {
+      return <RaceEnded race={race} />;
     }
 
     return <RacePlay race={race} />;

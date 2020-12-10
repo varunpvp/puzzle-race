@@ -51,7 +51,7 @@ export default class Race implements IRace {
   }
 
   finish() {
-    this.ref.child("state").set("finished");
+    // this.ref.child("state").set("finished");
   }
 
   subscribe(id: string) {
@@ -87,6 +87,7 @@ export default class Race implements IRace {
 
   @computed
   get currentRacer() {
+    console.log({ userId: this.userId });
     return this.racerList.find((it) => it.id === this.userId);
   }
 
@@ -125,6 +126,8 @@ export default class Race implements IRace {
 
     const timePassed = serverTime - this.startedAt;
     const timeLeft = this.time * 1000 - timePassed;
+
+    console.log({ serverTime, timePassed, timeLeft });
 
     if (timeLeft > 0) {
       this.timeLeft = timeLeft;

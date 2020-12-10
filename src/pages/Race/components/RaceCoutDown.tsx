@@ -7,7 +7,7 @@ const RaceCountDown: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
   const countDown = useCallback(() => {
     setCount((x) => {
       if (x > 1) {
-        setTimeout(countDown, 1000);
+        // setTimeout(countDown, 1000);
         return x - 1;
       } else {
         onFinish();

@@ -10,7 +10,7 @@ import Race from "../../../models/Race";
 const RacePlay: React.FC<{
   race: Race;
 }> = ({ race }) => {
-  const racer = race.currentRacer!;
+  const racer = race.currentRacer;
   const puzzle = race.currentPuzzle;
 
   const [help, setHelp] = useState<
@@ -22,7 +22,7 @@ const RacePlay: React.FC<{
     setHelp("sideToPlay");
   }, [puzzle.startFen]);
 
-  if (racer.finishedAt) {
+  if (racer?.finishedAt) {
     return (
       <Box
         display="flex"
@@ -115,7 +115,7 @@ const RacePlay: React.FC<{
       <Box padding={2} display="flex" justifyContent="space-between">
         <Box>
           <Typography variant="h5">Puzzles</Typography>
-          {racer.currentPuzzleIndex}/{race.puzzleList.length}
+          {racer?.currentPuzzleIndex ?? 0}/{race.puzzleList.length}
         </Box>
 
         {help === "sideToPlay" && (
