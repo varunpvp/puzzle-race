@@ -1,18 +1,26 @@
-import { Box, Container, Typography, Grid } from "@material-ui/core";
-import React from "react";
-import { useSnackbar } from "../../../App";
+import { Box, Container, Typography } from "@material-ui/core";
+import { Alert, AlertProps } from "@material-ui/lab";
+import React, { useEffect, useState } from "react";
 import PuzzleBoard from "../../../components/PuzzleBoard";
 import { errorSound, moveSound } from "../../../constants";
-import Race from "../../../models/Race";
-import { formatTime } from "../../../utils/utils";
+import { formatTime, getSideToPlayFromFen } from "../../../utils/utils";
 import RaceStanding from "./RaceStanding";
+import Race from "../../../models/Race";
 
 const RacePlay: React.FC<{
   race: Race;
 }> = ({ race }) => {
   const racer = race.currentRacer!;
   const puzzle = race.currentPuzzle;
-  const snackbar = useSnackbar();
+
+  const [help, setHelp] = useState<
+    "sideToPlay" | "incorrect" | "correct" | "solved"
+  >();
+  const sideToPlay = getSideToPlayFromFen(puzzle.startFen);
+
+  useEffect(() => {
+    setHelp("sideToPlay");
+  }, [puzzle.startFen]);
 
   if (racer.finishedAt) {
     return (
@@ -81,9 +89,12 @@ const RacePlay: React.FC<{
           movable={true}
           onIncorrectMove={() => {
             errorSound.play();
+            setHelp("incorrect");
+            setTimeout(() => setHelp("sideToPlay"), 1000);
           }}
           onSolve={() => {
-            snackbar.show("Solved!");
+            // snackbar.show("Solved!");
+            setHelp("solved");
             moveSound.play();
 
             setTimeout(() => {
@@ -96,28 +107,52 @@ const RacePlay: React.FC<{
           }}
           onCorrectMove={() => {
             moveSound.play();
+            setHelp("correct");
           }}
         />
       </Box>
 
-      <Box padding={2}>
-        <Grid container justify="space-between">
-          <Grid>
-            <Typography variant="h5">Puzzles</Typography>
-          </Grid>
-          <Grid>
-            <Typography variant="h5">Time left</Typography>
-          </Grid>
-        </Grid>
-        <Grid container justify="space-between">
-          <Grid>
-            {racer.currentPuzzleIndex}/{race.puzzleList.length}
-          </Grid>
-          <Grid>{race.formattedTimeLeft}</Grid>
-        </Grid>
+      <Box padding={2} display="flex" justifyContent="space-between">
+        <Box>
+          <Typography variant="h5">Puzzles</Typography>
+          {racer.currentPuzzleIndex}/{race.puzzleList.length}
+        </Box>
+
+        {help === "sideToPlay" && (
+          <MyAlert variant="filled" severity="info">
+            {sideToPlay === "w" ? "White" : "Black"} to move
+          </MyAlert>
+        )}
+
+        {help === "correct" && (
+          <MyAlert variant="filled" severity="success">
+            Correct!
+          </MyAlert>
+        )}
+
+        {help === "solved" && (
+          <MyAlert variant="filled" severity="success">
+            Solved!
+          </MyAlert>
+        )}
+
+        {help === "incorrect" && (
+          <MyAlert variant="filled" severity="error">
+            Incorrect
+          </MyAlert>
+        )}
+
+        <Box>
+          <Typography variant="h5">Time left</Typography>
+          <Typography align="right">{race.formattedTimeLeft}</Typography>
+        </Box>
       </Box>
     </Box>
   );
+};
+
+const MyAlert: React.FC<AlertProps> = (props) => {
+  return <Alert {...props} style={{ height: "min-content" }} />;
 };
 
 export default RacePlay;

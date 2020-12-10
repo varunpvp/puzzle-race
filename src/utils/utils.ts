@@ -22,3 +22,7 @@ export function objectToList<T>(obj: any, keyPropName = "id"): T[] {
     ...value,
   }));
 }
+
+export function getSideToPlayFromFen(fen: string) {
+  return fen.split(" ")[1];
+}
