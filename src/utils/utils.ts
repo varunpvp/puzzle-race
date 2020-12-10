@@ -15,3 +15,7 @@ export function sortRacers(racers: Omit<Racer, "id">[]) {
     ["desc", "asc"]
   );
 }
+
+export function getSideToPlayFromFen(fen: string) {
+  return fen.split(" ")[1];
+}
